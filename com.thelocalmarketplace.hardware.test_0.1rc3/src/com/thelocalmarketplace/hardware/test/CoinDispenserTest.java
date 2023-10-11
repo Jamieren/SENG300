@@ -18,6 +18,7 @@ import com.tdc.coin.CoinDispenser;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.NoPowerException;
+import powerutility.PowerGrid;
 
 
 public class CoinDispenserTest {
@@ -29,10 +30,11 @@ public class CoinDispenserTest {
     @Before
     public void setUp() {
         dispenser = new CoinDispenser(10);
-        dispenser.activate(); //assume the unit is activated
-        Coin.DEFAULT_CURRENCY = Currency.getInstance("USD");  // set default currency for Coin
-        coin25Cents = new Coin(new BigDecimal("0.25")); // 25 cents coin
-        coin1Dollar = new Coin(new BigDecimal("1.00")); // 1 dollar coin
+        dispenser.connect(PowerGrid.instance()); 				// connect to power grid
+        dispenser.activate(); 									// assume the unit is activated
+        Coin.DEFAULT_CURRENCY = Currency.getInstance("USD");  	// set default currency for Coin
+        coin25Cents = new Coin(new BigDecimal("0.25")); 		// 25 cents coin
+        coin1Dollar = new Coin(new BigDecimal("1.00")); 		// 1 dollar coin
     }
     
     @Test
@@ -70,7 +72,7 @@ public class CoinDispenserTest {
         dispenser.receive(null);
     }
     
-    @Test (expected = NoPowerException.class)
+    @Test(expected = DisabledException.class)
     public void testReceiveWhenDisabled() throws CashOverloadException, DisabledException {
         dispenser.disable(); // Simulate a disabled dispenser
         dispenser.receive(coin1Dollar);
@@ -89,9 +91,9 @@ public class CoinDispenserTest {
         assertEquals(2, unloadedCoins.size());
     }
     
-    @Test
-    public void testLoadNullCoin() {
-        assertThrows(NullPointerSimulationException.class, () -> dispenser.load(coin1Dollar, null));
+    @Test(expected = NullPointerSimulationException.class)
+    public void testLoadNullCoin() throws SimulationException, CashOverloadException {
+        dispenser.load(coin1Dollar, null);
     }
 
 
