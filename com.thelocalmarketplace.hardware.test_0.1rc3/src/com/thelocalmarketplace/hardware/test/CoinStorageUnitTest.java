@@ -190,6 +190,27 @@ public class CoinStorageUnitTest {
         unit.load(coin25Cents, null, coin1Dollar);  // This should throw NullPointerSimulationException
     }
 
+    @Test
+    public void testActivation() {
+        unit.disactivate();
+        assertFalse(unit.isActivated());
+        unit.activate();
+        assertTrue(unit.isActivated());
+    }
+    
+    @Test(expected = NoPowerException.class)
+    public void testLoadCoinNoPower() throws CashOverloadException {
+        unit.disactivate();  // Turn off power
+        unit.load(coin1Dollar);  // Trying to load a coin without power
+    }
+    
+    @Test(expected = NoPowerException.class)
+    public void testUnloadCoinsNoPower() {
+        unit.disactivate();  // Turn off power
+        unit.unload();  // Trying to unload coins without power
+    }
+    
+    
 
 }
 
