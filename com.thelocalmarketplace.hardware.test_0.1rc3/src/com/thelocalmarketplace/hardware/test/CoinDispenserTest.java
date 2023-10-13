@@ -1,8 +1,17 @@
+/*
+ * SENG300 Assignment 3
+ * Zhenhui Ren (30139966) 
+ * Yang Yang (30156356)
+ * Sukhnaaz Sidhu (30161587)
+ * Ranbir Singh (30187921)
+ */
+
 package com.thelocalmarketplace.hardware.test;
 
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
@@ -13,11 +22,19 @@ import org.junit.Test;
 import com.tdc.CashOverloadException;
 import com.tdc.ComponentFailure;
 import com.tdc.DisabledException;
+import com.tdc.IComponent;
+import com.tdc.IComponentObserver;
 import com.tdc.NoCashAvailableException;
 import com.tdc.PassiveSource;
 import com.tdc.Sink;
+import com.tdc.coin.AbstractCoinDispenser;
+import com.tdc.coin.AbstractCoinValidator;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinDispenser;
+import com.tdc.coin.CoinDispenserObserver;
+import com.tdc.coin.CoinValidatorObserver;
+import com.tdc.coin.ICoinDispenser;
+import com.thelocalmarketplace.hardware.test.AbstractCoinValidatorTest.DummyCoinValidatorObserver;
 
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import ca.ucalgary.seng300.simulation.SimulationException;
@@ -30,6 +47,8 @@ public class CoinDispenserTest {
     private CoinDispenser dispenser;
     private Coin coin25Cents;  // USD 0.25
     private Coin coin1Dollar;  // USD 1.00
+    private CoinDispenserObserver observer;
+
 
 
     @Before
@@ -71,7 +90,6 @@ public class CoinDispenserTest {
     public void testHasSpaceInitial() {
         assertTrue(dispenser.hasSpace()); // check to see if has space before accepting coins
     }
-
 
     @Test(expected = SimulationException.class)
     public void testReceiveNullCoin() throws Exception {
@@ -116,6 +134,48 @@ public class CoinDispenserTest {
         dispenser.load(coin1Dollar, null); // check if null coin can be loaded
     }
     
+    // Check result if disabled
+    @Test(expected = NoPowerException.class)
+    public void testLoadDisactivated() throws SimulationException, CashOverloadException {
+    	dispenser.disactivate();
+    	dispenser.load(coin1Dollar, coin25Cents);
+    }
+    
+    @Test(expected = NoPowerException.class)
+    public void testUnloadDisactivated() throws SimulationException, CashOverloadException {
+    	dispenser.load(coin1Dollar);
+    	dispenser.disactivate();
+    	dispenser.unload();
+    }
+    
+    @Test(expected = NoPowerException.class)
+    public void testReceiveDisactivated() throws SimulationException, CashOverloadException, DisabledException {
+    	dispenser.load(coin1Dollar);
+    	dispenser.disactivate();
+    	dispenser.receive(coin1Dollar);
+    }
+    
+    @Test(expected = NoPowerException.class)
+    public void testEmitDisactivated() throws SimulationException, CashOverloadException, NoCashAvailableException, DisabledException {
+    	dispenser.load(coin1Dollar);
+    	dispenser.disactivate();
+    	dispenser.emit();
+    }
+    
+    @Test(expected = NoPowerException.class)
+    public void testHasSpaceDisactivated() throws SimulationException, CashOverloadException   {
+    	dispenser.load(coin1Dollar);
+    	dispenser.disactivate();
+    	dispenser.hasSpace();
+    }
+    
+    @Test(expected = NoPowerException.class)
+    public void testRejectDisactivated() throws DisabledException, CashOverloadException  {
+    	dispenser.load(coin1Dollar);
+    	dispenser.disactivate();
+    	dispenser.reject(coin1Dollar);
+    }
+    
     @Test
     public void testEmit() throws NoPowerException, DisabledException, CashOverloadException, NoCashAvailableException {
         Sink<Coin> coinSinkStub = new Sink<Coin>() { // sink stub
@@ -157,13 +217,11 @@ public class CoinDispenserTest {
 			@Override
 			public void reject(Coin cash) throws CashOverloadException, DisabledException, ComponentFailure {
 				// TODO Auto-generated method stub
-
 			}
         };
 
         dispenser.source = cashSourceStub;
         dispenser.reject(coin1Dollar);
-
         // Assert behavior here
     }
     
@@ -180,6 +238,74 @@ public class CoinDispenserTest {
         dispenser.disactivate();
         dispenser.reject(coin1Dollar);
     }
+    
+    // stub implementation
+    public class DummyCoinDispenserObserver implements CoinDispenserObserver 
+    {
+
+		@Override
+		public void enabled(IComponent<? extends IComponentObserver> component) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void disabled(IComponent<? extends IComponentObserver> component) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void turnedOn(IComponent<? extends IComponentObserver> component) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void turnedOff(IComponent<? extends IComponentObserver> component) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void coinsFull(ICoinDispenser dispenser) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void coinsEmpty(ICoinDispenser dispenser) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void coinAdded(ICoinDispenser dispenser, Coin coin) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void coinRemoved(ICoinDispenser dispenser, Coin coin) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void coinsLoaded(ICoinDispenser dispenser, Coin... coins) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void coinsUnloaded(ICoinDispenser dispenser, Coin... coins) {
+			// TODO Auto-generated method stub
+			
+		}
+        
+    }
+
+    
 
 
 }
