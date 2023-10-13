@@ -1,3 +1,11 @@
+/*
+ * SENG300 Assignment 3
+ * Zhenhui Ren (30139966) 
+ * Yang Yang (30156356)
+ * Sukhnaaz Sidhu (30161587)
+ * Ranbir Singh (30187921)
+ */
+
 package com.thelocalmarketplace.hardware.test;
 
 
