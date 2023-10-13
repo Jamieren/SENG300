@@ -175,6 +175,13 @@ public class CoinDispenserTest {
     	dispenser.reject(coin1Dollar);
     }
     
+    @Test(expected = NoPowerException.class)
+    public void testSizeDisactivated() throws SimulationException, CashOverloadException  {
+    	dispenser.load(coin1Dollar);
+    	dispenser.disactivate();
+    	dispenser.size();
+    }
+    
     @Test
     public void testEmit() throws NoPowerException, DisabledException, CashOverloadException, NoCashAvailableException {
         Sink<Coin> coinSinkStub = new Sink<Coin>() { // sink stub
@@ -221,7 +228,6 @@ public class CoinDispenserTest {
 
         dispenser.source = cashSourceStub;
         dispenser.reject(coin1Dollar);
-        // Assert behavior here
     }
     
     @Test(expected = NoPowerException.class)
