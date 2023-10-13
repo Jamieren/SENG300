@@ -34,7 +34,6 @@ import com.tdc.coin.CoinDispenser;
 import com.tdc.coin.CoinDispenserObserver;
 import com.tdc.coin.CoinValidatorObserver;
 import com.tdc.coin.ICoinDispenser;
-import com.thelocalmarketplace.hardware.test.AbstractCoinValidatorTest.DummyCoinValidatorObserver;
 
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import ca.ucalgary.seng300.simulation.SimulationException;
